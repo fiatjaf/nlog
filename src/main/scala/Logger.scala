@@ -34,16 +34,31 @@ class Attacher(parent: Logger) {
 
 class Logger(val items: Items = List.empty) {
   def print(level: Level, items: Items, msg: String): Unit = {
-    val lvl = level.getClass.getSimpleName.toUpperCase()
+    val lvl = {
+      val (color, name) = level match {
+        case Debug => (Console.GREEN_B, "DBG")
+        case Info  => (Console.BLUE_B, "INF")
+        case Warn  => (Console.YELLOW_B, "WRN")
+        case Err   => (Console.RED_B, "ERR")
+      }
+      Console.BLACK + color + "[" + name + "]" + Console.RESET
+    }
     val its =
       items
         .map {
-          case (l: String, it: Any) => s"[$l]=$it"
-          case it                   => s"{$it}"
+          case (l: String, it: Any) =>
+            Console.BLUE + s"$l=" + Console.RESET + s"$it"
+          case it =>
+            Console.YELLOW + "{" + Console.RESET
+              + s"$it"
+              + Console.YELLOW + "}" + Console.RESET
         }
         .mkString(" ")
-    val sep = if items.size > 0 then " -- " else ""
-    System.err.print(level, s"$lvl ${msg}${sep}${its}")
+    val sep =
+      if items.size > 0 && msg.size > 0 then
+        Console.YELLOW + " ~ " + Console.RESET
+      else ""
+    System.err.println(s"$lvl ${msg}${sep}${its}")
   }
 
   val threshold: Level = Debug
