@@ -33,6 +33,7 @@ class Attacher(parent: Logger) {
 }
 
 class Logger(val items: Items = List.empty) {
+  def target(str: String): Unit = System.err.println(str)
   def print(level: Level, items: Items, msg: String): Unit = {
     val lvl = {
       val (color, name) = level match {
@@ -58,7 +59,7 @@ class Logger(val items: Items = List.empty) {
       if items.size > 0 && msg.size > 0 then
         Console.YELLOW + " ~ " + Console.RESET
       else ""
-    System.err.println(s"$lvl ${msg}${sep}${its}")
+    target(s"$lvl ${msg}${sep}${its}")
   }
 
   val threshold: Level = Debug
